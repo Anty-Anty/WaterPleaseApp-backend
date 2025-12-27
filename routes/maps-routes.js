@@ -3,13 +3,15 @@ const express = require('express');
 const router = express.Router();
 
 router.get('/', (req, res, next) => {
-    console.log('GET Request in Map');
     res.json({message: 'map!'});
 });
 
-router.post('/createMap', (req, res, next) => {
-    console.log('POST Request in Map');
+router.post('/createmap', (req, res, next) => {
     res.json({message: 'Map created!'});
+});
+
+router.patch('/editmap', (req, res, next) => {
+    res.json({message: 'Map edited!'});
 });
 
 module.exports = router;
