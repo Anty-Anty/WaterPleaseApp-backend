@@ -1,17 +1,15 @@
 const express = require('express');
 
+const mapsController = require('../controllers/maps-controllers');
+
 const router = express.Router();
 
-router.get('/', (req, res, next) => {
-    res.json({message: 'map!'});
-});
+router.get('/', mapsController.getMap);
 
-router.post('/createmap', (req, res, next) => {
-    res.json({message: 'Map created!'});
-});
+router.post('/createmap', mapsController.createMap);
 
-router.patch('/editmap', (req, res, next) => {
-    res.json({message: 'Map edited!'});
-});
+router.patch('/:mid', mapsController.updateMap);
+
+router.delete('/:mid', mapsController.updateMap);
 
 module.exports = router;

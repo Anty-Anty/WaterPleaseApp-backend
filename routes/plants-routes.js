@@ -1,21 +1,15 @@
 const express = require('express');
 
+const plantsController = require('../controllers/plants-controllers');
+
 const router = express.Router();
 
-router.get('/', (req, res, next) => {
-    res.json({message: 'It works!'});
-});
+router.get('/', plantsController.getPlantsList);
 
-router.post('/createplant', (req, res, next) => {
-    res.json({message: 'created!'});
-});
+router.post('/createplant', plantsController.createPlant);
 
-router.patch('/:pid', (req, res, next) => {
-    res.json({message: 'edited!'});
-});
+router.patch('/:pid', plantsController.updatePlant);
 
-router.delete('/:pid', (req, res, next) => {
-    res.json({message: 'deleted!'});
-});
+router.delete('/:pid', plantsController.deleteItem);
 
 module.exports = router;
