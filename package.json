@@ -12,7 +12,8 @@
   "description": "",
   "dependencies": {
     "body-parse": "^0.1.0",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "express-validator": "^7.3.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"

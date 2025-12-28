@@ -1,4 +1,5 @@
 // const mongoose = require('mongoose');
+const { validationResult } = require('express-validator');
 
 const HttpError = require('../models/http-error');
 // const Item = require('../models/item');
@@ -11,11 +12,25 @@ const getMap = async (req, res, next) => {
 
 //CREATE MAP
 const createMap = async (req, res, next) => {
+
+    //express-validation
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return next(new HttpError('Invalid input passed.', 422));
+    }
+
     res.status(201).json({ respond: "map created" });
 };
 
 //UPDATE/EDIT PLANT
 const updateMap = async (req, res, next) => {
+
+    //express-validation
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return next(new HttpError('Invalid input passed.', 422));
+    }
+
     res.status(200).json({ respond: "map updated" });
 };
 

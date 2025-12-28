@@ -8,6 +8,9 @@ const HttpError = require ('./models/http-error');
 
 const app = express();
 
+//JSON body-parsing middleware: (POST and PATCH wouldn't work without it)
+app.use(bodyParser.json());
+
 //ROUTES. (user route for future development)
 // app.use('/api/users', usersRoutes);
 app.use('/api/maps', mapsRoutes);
