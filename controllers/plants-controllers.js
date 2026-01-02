@@ -2,13 +2,25 @@
 const { validationResult } = require('express-validator');
 
 const HttpError = require('../models/http-error');
-// const Item = require('../models/item');
+const Plant = require('../models/plant');
 // const User = require('../models/user');
 
 //FIND LIST OF PLANTS
 const getPlantsList = async (req, res, next) => {
 
-    res.json({ respond: "list of plants" });
+    let plantsList;
+
+    //searching for items
+    try {
+        plantsList = await Plant.find({});
+    } catch (err) {
+        const error = new HttpError(
+            'Fetching items failed', 500
+        );
+        return next(error);
+    };
+
+    res.json({ plantsList: plantsList.map(plant => plant.toObject({ getters: true })) });
 };
 
 //CREATE PLANT
@@ -20,9 +32,26 @@ const createPlant = async (req, res, next) => {
         return next(new HttpError('Invalid input passed.', 422));
     }
 
-    const { img, wLevel, title, lastWateredDate, daysToNextWatering, mapPosition } = req.body;
+    const { img, wLevel, title, lastWateredDate, daysToNextWatering } = req.body;
 
-    res.status(201).json({ respond: "created" });
+    const createdPlant = new Plant({
+        title,
+        img,
+        wLevel,
+        lastWateredDate,
+        daysToNextWatering
+    });
+
+     try {
+         await createdPlant.save();
+    } catch (err) {
+        const error = new HttpError(
+            'Creating item failed', 500
+        );
+        return next(error);
+    };
+
+    res.status(201).json({ plant: createdPlant.toObject({ getters: true }) });
 };
 
 //UPDATE/EDIT PLANT

@@ -2,12 +2,28 @@
 const { validationResult } = require('express-validator');
 
 const HttpError = require('../models/http-error');
-// const Item = require('../models/item');
+const Map = require('../models/map');
 // const User = require('../models/user');
 
 //LOAD MAP
 const getMap = async (req, res, next) => {
-    res.json({ respond: "map" });
+
+    let map;
+
+    try {
+        map = await Map.findOne({}).populate('plants');;
+    } catch (err) {
+        const error = new HttpError(
+            'Fetching map failed', 500
+        );
+        return next(error);
+    };
+
+    if (!map) {
+        return next(new HttpError('No map found.', 404));
+    }
+
+    res.json({ map: map.toObject({ getters: true }) });
 };
 
 //CREATE MAP
@@ -19,7 +35,41 @@ const createMap = async (req, res, next) => {
         return next(new HttpError('Invalid input passed.', 422));
     }
 
-    res.status(201).json({ respond: "map created" });
+    //checking if map already exists
+    let existingMap;
+    try {
+        existingMap = await Map.findOne({})
+    } catch (err) {
+        return next(
+            new HttpError('Creating map failed.', 500)
+        );
+    };
+
+    if (existingMap) {
+        return next(
+            new HttpError('Map already exists.', 422)
+        );
+    };
+
+    const { columnsNumber } = req.body;
+
+
+    const createdMap = new Map({
+        columnsNumber,
+        selectedSquares: [],
+        plants: [],
+    });
+
+    try {
+        await createdMap.save();
+    } catch (err) {
+        const error = new HttpError(
+            'Creating item failed', 500
+        );
+        return next(error);
+    };
+
+    res.status(201).json({ map: createdMap.toObject({ getters: true }) });
 };
 
 //UPDATE/EDIT PLANT
