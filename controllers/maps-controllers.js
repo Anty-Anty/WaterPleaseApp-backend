@@ -1,4 +1,4 @@
-// const mongoose = require('mongoose');
+const mongoose = require('mongoose');
 const { validationResult } = require('express-validator');
 
 const HttpError = require('../models/http-error');
