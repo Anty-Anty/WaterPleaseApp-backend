@@ -64,74 +64,63 @@ const updatePlant = async (req, res, next) => {
     }
 
     
-      const {
-        img,
-        wLevel,
-        title,
-        lastWateredDate,
-        daysToNextWatering,
-        mapPosition,
-        mapId,
-      } = req.body;
-      const plantId = req.params.pid;
-    
-      let plant;
-      try {
-        plant = await Plant.findById(plantId);
-      } catch (err) {
-        return next(new HttpError("Could not find plant.", 500));
-      }
-    
-      if (!plant) {
-        return next(new HttpError("Plant not found.", 404));
-      }
-    
-      // store old map to remove plant if changed
-      const oldMapId = plant.map;
-    
-      // update plant fields
-      plant.title = title;
-      plant.img = img;
-      plant.wLevel = wLevel;
-      plant.lastWateredDate = lastWateredDate;
-      plant.daysToNextWatering = daysToNextWatering;
-      plant.mapPosition = mapPosition;
-      plant.map = mapId || null;
-    
-      // transaction: update plant and map references
-      const sess = await mongoose.startSession();
-      sess.startTransaction();
-    
-      try {
-        await plant.save({ session: sess });
-    
-        // remove plant from old map
-        if (oldMapId && oldMapId.toString() !== mapId) {
-          const oldMap = await Map.findById(oldMapId);
-          if (oldMap) {
-            oldMap.plants.pull(plant._id);
-            await oldMap.save({ session: sess });
-          }
+const { img, wLevel, title, lastWateredDate, daysToNextWatering, mapPosition } = req.body;
+  const plantId = req.params.pid;
+
+  let plant;
+  let map;
+
+  try {
+    plant = await Plant.findById(plantId);
+    map = await Map.findOne({}); // single map
+  } catch (err) {
+    return next(new HttpError("Fetching plant or map failed.", 500));
+  }
+
+  if (!plant) {
+    return next(new HttpError("Plant not found.", 404));
+  }
+
+  // Update plant fields
+  plant.title = title;
+  plant.img = img;
+  plant.wLevel = wLevel;
+  plant.lastWateredDate = lastWateredDate;
+  plant.daysToNextWatering = daysToNextWatering;
+  plant.mapPosition = mapPosition;
+
+  // Start transaction
+  const sess = await mongoose.startSession();
+  sess.startTransaction();
+
+  try {
+    await plant.save({ session: sess });
+
+    if (map) {
+      if (mapPosition === null) {
+        // Remove plant from map
+        map.plants.pull(plant._id);
+        plant.map = null;
+      } else {
+        // Add plant to map if not already there
+        if (!map.plants.includes(plant._id)) {
+          map.plants.push(plant._id);
         }
-    
-        // add plant to new map
-        if (mapId) {
-          const newMap = await Map.findById(mapId);
-          if (newMap && !newMap.plants.includes(plant._id)) {
-            newMap.plants.push(plant._id);
-            await newMap.save({ session: sess });
-          }
-        }
-    
-        await sess.commitTransaction();
-      } catch (err) {
-        await sess.abortTransaction();
-        return next(new HttpError("Updating plant failed.", 500));
-      } finally {
-        sess.endSession();
+        plant.map = map._id;
       }
-    
-      res.status(200).json({ plant: plant.toObject({ getters: true }) });
+
+      await map.save({ session: sess });
+    }
+
+    await sess.commitTransaction();
+  } catch (err) {
+    await sess.abortTransaction();
+    return next(new HttpError("Updating plant failed.", 500));
+  } finally {
+    sess.endSession();
+  }
+
+  res.status(200).json({ plant: plant.toObject({ getters: true }) });
     
 };
 
