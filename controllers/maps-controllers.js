@@ -72,7 +72,7 @@ const createMap = async (req, res, next) => {
     res.status(201).json({ map: createdMap.toObject({ getters: true }) });
 };
 
-//UPDATE/EDIT PLANT
+//UPDATE/EDIT MAP
 const updateMap = async (req, res, next) => {
 
     //express-validation
@@ -81,10 +81,37 @@ const updateMap = async (req, res, next) => {
         return next(new HttpError('Invalid input passed.', 422));
     }
 
-    res.status(200).json({ respond: "map updated" });
+    const { selectedSquares } = req.body;
+
+    if (!Array.isArray(selectedSquares)) {
+        return next(new HttpError("selectedSquares must be an array.", 422));
+    }
+
+    let map;
+    try {
+        map = await Map.findOne({});
+    } catch (err) {
+        return next(new HttpError("Updating map failed.", 500));
+    }
+
+    if (!map) {
+        return next(new HttpError("Map not found.", 404));
+    }
+
+    map.selectedSquares = selectedSquares;
+
+    try {
+        await map.save();
+    } catch (err) {
+        return next(new HttpError("Saving map failed.", 500));
+    }
+
+    res.status(200).json({
+        map: map.toObject({ getters: true }),
+    });
 };
 
-//DELETE PLANT
+//DELETE MAP
 const deleteMap = async (req, res, next) => {
     res.status(200).json({ message: 'Map was deleted.' })
 }
