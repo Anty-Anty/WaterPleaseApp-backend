@@ -113,7 +113,41 @@ const updateMap = async (req, res, next) => {
 
 //DELETE MAP
 const deleteMap = async (req, res, next) => {
-    res.status(200).json({ message: 'Map was deleted.' })
+    // let map;
+
+    // try {
+    //     map = await Map.findOne({}).populate("plants");
+    // } catch (err) {
+    //     return next(new HttpError("Fetching map failed.", 500));
+    // }
+
+    // if (!map) {
+    //     return next(new HttpError("Map not found.", 404));
+    // }
+
+    // const sess = await mongoose.startSession();
+    // sess.startTransaction();
+
+    // try {
+    //     // 1. Clear map reference from all plants
+    //     for (const plant of map.plants) {
+    //         plant.map = null;
+    //         plant.mapPosition = null;
+    //         await plant.save({ session: sess });
+    //     }
+
+    //     // 2. Delete the map itself
+    //     await map.deleteOne({ session: sess });
+
+    //     await sess.commitTransaction();
+    // } catch (err) {
+    //     await sess.abortTransaction();
+    //     return next(new HttpError("Deleting map failed.", 500));
+    // } finally {
+    //     sess.endSession();
+    // }
+
+    res.status(200).json({ message: "Map deleted successfully." });
 }
 
 exports.getMap = getMap;

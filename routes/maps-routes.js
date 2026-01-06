@@ -33,6 +33,6 @@ router.patch('/:mid',
     ],
     mapsController.updateMap);
 
-router.delete('/:mid', mapsController.updateMap);
+router.delete('/:mid', mapsController.deleteMap);
 
 module.exports = router;
