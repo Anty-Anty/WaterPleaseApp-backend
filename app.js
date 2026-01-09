@@ -13,6 +13,14 @@ const app = express();
 //JSON body-parsing middleware: (POST and PATCH wouldn't work without it)
 app.use(bodyParser.json());
 
+//CORS error fix
+app.use((req,res,next)=>{
+    res.setHeader('Access-Control-Allow-Origin', '*', process.env.ONRENDER_HEADER);
+    res.setHeader('Access-Control-Allow-Headers','Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    res.setHeader('Access-Control-Allow-Methods','GET,POST,PATCH,DELETE')
+    next();
+});
+
 //ROUTES. (user route for future development)
 // app.use('/api/users', usersRoutes);
 app.use('/api/maps', mapsRoutes);
