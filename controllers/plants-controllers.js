@@ -39,7 +39,9 @@ const createPlant = async (req, res, next) => {
         img,
         wLevel,
         lastWateredDate,
-        daysToNextWatering
+        daysToNextWatering,
+        mapPosition: null,
+        map: null
     });
 
     try {

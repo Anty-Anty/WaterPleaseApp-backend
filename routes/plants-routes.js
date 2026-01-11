@@ -24,7 +24,7 @@ router.post('/createplant',
 
         check('lastWateredDate')
             .notEmpty()
-            .isISO8601(),
+            .matches(/^\d{4}-\d{2}-\d{2}$/),
 
         check('daysToNextWatering')
             .notEmpty()
@@ -32,7 +32,7 @@ router.post('/createplant',
 
         check('mapPosition')
             .optional({ nullable: true })
-            .isString()
+            .isInt({ min: 0 })
     ],
     plantsController.createPlant);
 
@@ -54,7 +54,7 @@ router.patch('/:pid',
 
         check('lastWateredDate')
             .optional()
-            .isISO8601(),
+            .matches(/^\d{4}-\d{2}-\d{2}$/),
 
         check('daysToNextWatering')
             .optional()
@@ -62,7 +62,7 @@ router.patch('/:pid',
 
         check('mapPosition')
             .optional({ nullable: true })
-            .isString()
+            .isInt({ min: 0 })
     ],
     plantsController.updatePlant);
 
